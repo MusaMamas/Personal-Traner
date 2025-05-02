@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef, ModuleRegistry, AllCommunityModule } from "ag-grid-community";
+import { ColDef, ModuleRegistry, AllCommunityModule, ICellRendererParams } from "ag-grid-community";
 import Snackbar from "@mui/material/Snackbar";
+import Button from "@mui/material/Button";
 import "ag-grid-community/styles/ag-theme-material.css";
+import AddCustomer from "./AddCustomer";
 import { Customer } from "../types";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -20,7 +22,15 @@ export default function CustomerList() {
     { field: "phone", filter: true },
     { field: "streetaddress", filter: true },
     { field: "postcode", filter: true },
-    { field: "city", filter: true }
+    { field: "city", filter: true },
+    {
+      cellRenderer: (params: ICellRendererParams) => (
+        <Button size = "small" color = "error" onClick={() => handleDelete(params)}>
+            Delete
+        </Button>   
+        )
+    }
+    
   ]);
 
   useEffect(() => {
@@ -37,8 +47,18 @@ export default function CustomerList() {
       .catch(error => console.error(error));
   };
 
+  const handleDelete = (params: ICellRendererParams) => {
+    const customerId = params.data.id;
+    fetch(`https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers/${customerId}`, {
+      method: "DELETE",
+    })
+      .then(() => fetchCustomers())
+      .catch(error => console.error(error));
+  };
+
   return (
     <>
+      <AddCustomer fetchCustomers={fetchCustomers} />
       <div className="ag-theme-material" style={{ height: 600, width: "100%" }}>
         <AgGridReact
           columnDefs={columnDefs}
