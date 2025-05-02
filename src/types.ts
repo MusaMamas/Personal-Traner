@@ -6,7 +6,15 @@ export type Customer = {
   streetaddress: string;
   postcode: string;
   city: string;
-}
+  _links : {
+      self : {
+        href: string;
+      }
+      customer : {
+        href: string;
+      }  
+    }
+  }
 
 export type Training = {
   id: number;

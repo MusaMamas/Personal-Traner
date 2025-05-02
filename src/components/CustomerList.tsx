@@ -5,6 +5,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
 import "ag-grid-community/styles/ag-theme-material.css";
 import AddCustomer from "./AddCustomer";
+import EditCustomer from "./EditCustomer";
 import { Customer } from "../types";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -23,6 +24,12 @@ export default function CustomerList() {
     { field: "streetaddress", filter: true },
     { field: "postcode", filter: true },
     { field: "city", filter: true },
+    {
+      headerName: "Edit",
+      cellRenderer: (params: ICellRendererParams) => (
+        <EditCustomer data={params.data} fetchCustomers={fetchCustomers} />
+      )
+    },
     {
       cellRenderer: (params: ICellRendererParams) => (
         <Button size = "small" color = "error" onClick={() => handleDelete(params)}>
