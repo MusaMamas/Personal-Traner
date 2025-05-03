@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
-import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
+import { AllCommunityModule, ColDef, ModuleRegistry, ICellRendererParams } from "ag-grid-community";
 import Snackbar from "@mui/material/Snackbar";
+import Button from "@mui/material/Button";
 import dayjs from "dayjs";
 import "ag-grid-community/styles/ag-theme-material.css";
 import { Training } from "../types";
 
-
 ModuleRegistry.registerModules([AllCommunityModule]);
-
-
 
 export default function TrainingList() {
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [open, setOpen] = useState(false);
+  
 
   const [columnDefs] = useState<ColDef<Training>[]>([ 
     {
@@ -26,9 +25,20 @@ export default function TrainingList() {
     { field: "duration", headerName: "Duration (min)", filter: true },
     {
       headerName: "Customer",
-      valueGetter: params => `${params.data?.customer?.firstname ?? ""} ${params.data?.customer?.lastname ?? ""}`,
+      valueGetter: params => {
+      const customer = params.data?.customer;
+      return customer ? `${customer.firstname} ${customer.lastname}` : "N/A";
+      },
       filter: true
     },
+    {
+      cellRenderer: (params: ICellRendererParams) => (
+        <Button size = "small" color = "error" onClick={() => handleDelete(params)}>
+            Delete
+        </Button>   
+        )
+    }
+    
   ]);
 
   useEffect(() => {
@@ -44,8 +54,20 @@ export default function TrainingList() {
       })
       .catch(error => console.error(error));
   };
-
   
+  const handleDelete = (params: ICellRendererParams) => {
+    if (!window.confirm("Are you sure you want to delete this training?")) return;
+  
+    const trainingId = params.data?.id;
+    if (!trainingId) return;
+  
+    fetch(`https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings/${trainingId}`, {
+      method: "DELETE"
+    })
+      .then(() => fetchTrainings())
+      .catch((err) => console.error(err));
+  };
+
   return (
     <>
       <div className="ag-theme-material" style={{ height: 600, width: "100%" }}>

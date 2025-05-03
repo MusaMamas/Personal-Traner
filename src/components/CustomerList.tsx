@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import "ag-grid-community/styles/ag-theme-material.css";
 import AddCustomer from "./AddCustomer";
 import EditCustomer from "./EditCustomer";
+import AddTraining from "./AddTraining";
 import { Customer } from "../types";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -28,6 +29,15 @@ export default function CustomerList() {
       headerName: "Edit",
       cellRenderer: (params: ICellRendererParams) => (
         <EditCustomer data={params.data} fetchCustomers={fetchCustomers} />
+      )
+    },
+    {
+      headerName: "Add Training",
+      cellRenderer: (params: ICellRendererParams) => (
+        <AddTraining 
+          customerHref={params.data._links.customer.href} 
+          fetchTrainings={() => {}} // voit lisätä halutessa myös fetchTrainings-funktion
+        />
       )
     },
     {
@@ -55,6 +65,7 @@ export default function CustomerList() {
   };
 
   const handleDelete = (params: ICellRendererParams) => {
+    if (!window.confirm("Are you sure you want to delete this customer?")) return;
     const customerId = params.data.id;
     fetch(`https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers/${customerId}`, {
       method: "DELETE",
