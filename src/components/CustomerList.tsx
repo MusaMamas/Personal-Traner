@@ -6,8 +6,8 @@ import Button from "@mui/material/Button";
 import "ag-grid-community/styles/ag-theme-material.css";
 import AddCustomer from "./AddCustomer";
 import EditCustomer from "./EditCustomer";
-import AddTraining from "./AddTraining";
 import { Customer } from "../types";
+import { saveAs } from "file-saver";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -29,15 +29,6 @@ export default function CustomerList() {
       headerName: "Edit",
       cellRenderer: (params: ICellRendererParams) => (
         <EditCustomer data={params.data} fetchCustomers={fetchCustomers} />
-      )
-    },
-    {
-      headerName: "Add Training",
-      cellRenderer: (params: ICellRendererParams) => (
-        <AddTraining 
-          customerHref={params.data._links.customer.href} 
-          fetchTrainings={() => {}} // voit lisätä halutessa myös fetchTrainings-funktion
-        />
       )
     },
     {
@@ -74,9 +65,31 @@ export default function CustomerList() {
       .catch(error => console.error(error));
   };
 
+  const exportToCSV = () => {
+    const headers = ["Firstname", "Lastname", "Email", "Phone", "Streetaddress", "Postcode", "City"];
+    const rows = customers.map(c => [
+      c.firstname,
+      c.lastname,
+      c.email,
+      c.phone,
+      c.streetaddress,
+      c.postcode,
+      c.city,
+    ]);
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(field => `"${field}"`).join(","))
+      .join("\n");
+  
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "customers.csv");
+  };
+
   return (
     <>
       <AddCustomer fetchCustomers={fetchCustomers} />
+      <Button variant="outlined" onClick={exportToCSV} style={{ margin: "10px 0" }}>
+        Export to CSV
+      </Button>
       <div className="ag-theme-material" style={{ height: 600, width: "100%" }}>
         <AgGridReact
           columnDefs={columnDefs}

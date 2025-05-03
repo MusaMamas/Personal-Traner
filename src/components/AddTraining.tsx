@@ -97,7 +97,7 @@ export default function AddTraining({ fetchTrainings }: AddTrainingProps) {
             onChange={(e) => setActivity(e.target.value)}
           />
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <InputLabel id="demo-simple-select-label">Customer</InputLabel>
               <Select
                 variant="standard"
                 labelId="demo-simple-select-label"

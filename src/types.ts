@@ -33,3 +33,9 @@ export type CreateTraining = {
   duration: string
   customer: string
 }
+
+export type CalendarEvent = {
+  title: string;
+  start: string;
+  allDay: boolean;
+};

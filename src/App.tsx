@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import CustomerList from "./components/CustomerList";
 import TrainingList from "./components/TrainingList";
+import TrainingCalendar from "./components/TrainingCalendar";
 import "./App.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -27,12 +28,16 @@ function App() {
             <Button color="inherit" component={Link} to="/trainings">
               Trainings
             </Button>
+            <Button color="inherit" component={Link} to="/calendar">
+              Calendar
+            </Button>
           </Toolbar>
         </AppBar>
         <Container maxWidth="lg" sx={{ mt: 4 }}>
           <Routes>
             <Route path="*" element={<CustomerList />} />
             <Route path="/trainings" element={<TrainingList />} />
+            <Route path="/calendar" element={<TrainingCalendar />} />
           </Routes>
         </Container>
       </LocalizationProvider>
