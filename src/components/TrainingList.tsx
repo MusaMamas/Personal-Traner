@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import dayjs from "dayjs";
 import "ag-grid-community/styles/ag-theme-material.css";
 import { Training } from "../types";
+import AddTraining from "./AddTraining";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -70,6 +71,7 @@ export default function TrainingList() {
 
   return (
     <>
+    <AddTraining fetchTrainings={fetchTrainings} />
       <div className="ag-theme-material" style={{ height: 600, width: "100%" }}>
         <AgGridReact
           columnDefs={columnDefs}

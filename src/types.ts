@@ -26,3 +26,10 @@ export type Training = {
     lastname: string;
   }
 }
+
+export type CreateTraining = {
+  date: string
+  activity: string
+  duration: string
+  customer: string
+}

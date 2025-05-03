@@ -8,30 +8,34 @@ import Button from "@mui/material/Button";
 import CustomerList from "./components/CustomerList";
 import TrainingList from "./components/TrainingList";
 import "./App.css";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 function App() {
   return (
     <Router>
-      <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Personal Trainer
-          </Typography>
-          <Button color="inherit" component={Link} to="/customers">
-            Customers
-          </Button>
-          <Button color="inherit" component={Link} to="/trainings">
-            Trainings
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Routes>
-          <Route path="*" element={<CustomerList />} />
-          <Route path="/trainings" element={<TrainingList />} />
-        </Routes>
-      </Container>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <CssBaseline />
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Personal Trainer
+            </Typography>
+            <Button color="inherit" component={Link} to="/customers">
+              Customers
+            </Button>
+            <Button color="inherit" component={Link} to="/trainings">
+              Trainings
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <Routes>
+            <Route path="*" element={<CustomerList />} />
+            <Route path="/trainings" element={<TrainingList />} />
+          </Routes>
+        </Container>
+      </LocalizationProvider>
     </Router>
   );
 }

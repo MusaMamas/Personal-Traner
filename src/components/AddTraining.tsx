@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -7,31 +7,57 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs, { Dayjs } from "dayjs";
-import { Training } from "../types";
+import { CreateTraining, Customer } from "../types";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 type AddTrainingProps = {
-  customerHref: string; // esim. customer._links.customer.href
   fetchTrainings: () => void;
 };
 
-export default function AddTraining({ customerHref, fetchTrainings }: AddTrainingProps) {
+export default function AddTraining({ fetchTrainings }: AddTrainingProps) {
   const [open, setOpen] = useState(false);
   const [activity, setActivity] = useState("");
   const [duration, setDuration] = useState<number>(30);
   const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [currentCustomerHref, setCurrentCustomerHref] = useState("")
 
   const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setActivity("")
+    setDuration(0)
+    setDate(dayjs())
+    setCurrentCustomerHref("")
+  }
+
+  useEffect(() => {
+    getCustomers()
+  }, [])
+
+  const getCustomers = () => {
+    fetch("https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to save training");
+        return response.json();
+      })
+      .then((data) => {
+        setCustomers(data._embedded.customers)
+      })
+  }
 
   const handleSave = () => {
     if (!date) return;
 
-    const training: Training = {
+    const training: CreateTraining = {
       date: date.toISOString(),
+      duration: duration + "",
       activity,
-      duration,
-      customer: { href: customerHref },
-    };
+      customer: currentCustomerHref
+    }
 
     fetch("https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/trainings", {
       method: "POST",
@@ -57,8 +83,9 @@ export default function AddTraining({ customerHref, fetchTrainings }: AddTrainin
         <DialogContent>
           <DateTimePicker
             label="Date and Time"
-            value={date}
-            onChange={(newValue) => setDate(newValue)}
+            value={date as null}
+            format="yyyy-MM-dd"
+            onChange={(newValue) => setDate(newValue as null)}
             sx={{ marginTop: 2, marginBottom: 1 }}
           />
           <TextField
@@ -69,6 +96,25 @@ export default function AddTraining({ customerHref, fetchTrainings }: AddTrainin
             value={activity}
             onChange={(e) => setActivity(e.target.value)}
           />
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+              <Select
+                variant="standard"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={currentCustomerHref}
+                label="Customer"
+                onChange={({ target: { value } }) => {
+                  setCurrentCustomerHref(value)
+                }}
+              >
+                {customers.map(customer => {
+                  return (
+                    <MenuItem value={customer._links.self.href}>{customer.firstname} {customer.lastname}</MenuItem>
+                  )
+                })}
+            </Select>
+          </FormControl>
           <TextField
             margin="dense"
             label="Duration (minutes)"
