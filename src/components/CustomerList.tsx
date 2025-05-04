@@ -57,13 +57,15 @@ export default function CustomerList() {
 
   const handleDelete = (params: ICellRendererParams) => {
     if (!window.confirm("Are you sure you want to delete this customer?")) return;
-    const customerId = params.data.id;
-    fetch(`https://customer-rest-service-frontend-personaltrainer.2.rahtiapp.fi/api/customers/${customerId}`, {
-      method: "DELETE",
-    })
-      .then(() => fetchCustomers())
-      .catch(error => console.error(error));
-  };
+    const customerUrl = params.data._links?.customer?.href;
+    if (!customerUrl) {
+    alert("Customer link is missing!");
+    return;
+    }
+    fetch(customerUrl, { method: "DELETE" })
+    .then(() => fetchCustomers())
+    .catch(error => console.error(error));
+    };
 
   const exportToCSV = () => {
     const headers = ["Firstname", "Lastname", "Email", "Phone", "Streetaddress", "Postcode", "City"];
